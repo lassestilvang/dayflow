@@ -45,7 +45,6 @@ export function TimeSlot({ hour, date }: TimeSlotProps) {
         <EventCard
           key={event.id}
           title={event.title}
-          source={event.source}
           startTime={event.start_time}
           endTime={event.end_time}
           collaborators={event.collaborations?.map(c => c.user)}
