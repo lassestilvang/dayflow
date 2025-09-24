@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { AppDataSource } from "../data-source";
@@ -17,7 +17,7 @@ router.post(
   "/register",
   validateUserRegistration,
   handleValidationErrors,
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     try {
       const { email, password, name } = req.body;
 
@@ -57,7 +57,7 @@ router.post(
   "/login",
   validateUserLogin,
   handleValidationErrors,
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     try {
       const { email, password } = req.body;
 
@@ -89,7 +89,7 @@ router.post(
 );
 
 // OAuth2 placeholder (Google)
-router.get("/google", (req, res) => {
+router.get("/google", (req: Request, res: Response) => {
   // Placeholder for OAuth2 implementation
   res.json({ message: "OAuth2 Google login not implemented yet" });
 });

@@ -78,7 +78,7 @@ router.post("/:importId", authenticateToken, async (req: AuthRequest, res) => {
         external_id: externalTask.id,
         user,
         category: category || undefined,
-      });
+      } as any);
 
       await taskRepository.save(task);
       imported++;

@@ -5,13 +5,25 @@ import { User } from "../entities/User";
 
 declare global {
   namespace Express {
-    interface Request {
-      user?: User;
+    interface User {
+      id: number;
+      email: string;
+      password: string;
+      name: string;
+      created_at: Date;
+      updated_at: Date;
+      tasks: any[];
+      events: any[];
+      categories: any[];
+      taskImports: any[];
+      importHistory: any[];
+      collaborations: any[];
+      calendarIntegrations: any[];
     }
   }
 }
 
-export type AuthRequest = Request & { user?: User };
+export type AuthRequest = Request;
 
 export const authenticateToken = async (
   req: Request,

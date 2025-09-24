@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { TaskImport } from "../entities/TaskImport";
 import { authenticateToken, AuthRequest } from "../middleware/auth";
@@ -7,8 +7,7 @@ import { TaskImportServiceFactory } from "../services/taskImport/TaskImportServi
 const router = Router();
 const taskImportRepository = AppDataSource.getRepository(TaskImport);
 
-// @ts-ignore
-router.get("/", authenticateToken, async (req: Request, res) => {
+router.get("/", authenticateToken, async (req: Request, res: Response) => {
   try {
     const user = req.user!;
     const imports = await taskImportRepository.find({
@@ -20,8 +19,7 @@ router.get("/", authenticateToken, async (req: Request, res) => {
   }
 });
 
-// @ts-ignore
-router.post("/", authenticateToken, async (req: Request, res) => {
+router.post("/", authenticateToken, async (req: Request, res: Response) => {
   try {
     const user = req.user!;
     const { provider, credentials } = req.body;
@@ -59,8 +57,7 @@ router.post("/", authenticateToken, async (req: Request, res) => {
   }
 });
 
-// @ts-ignore
-router.put("/:id", authenticateToken, async (req: Request, res) => {
+router.put("/:id", authenticateToken, async (req: Request, res: Response) => {
   try {
     const user = req.user!;
     const { id } = req.params;
@@ -93,8 +90,7 @@ router.put("/:id", authenticateToken, async (req: Request, res) => {
   }
 });
 
-// @ts-ignore
-router.delete("/:id", authenticateToken, async (req: Request, res) => {
+router.delete("/:id", authenticateToken, async (req: Request, res: Response) => {
   try {
     const user = req.user!;
     const { id } = req.params;

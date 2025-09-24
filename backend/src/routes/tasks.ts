@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { Task } from "../entities/Task";
 import { Event } from "../entities/Event";
@@ -34,7 +34,7 @@ router.post(
   authenticateToken,
   validateTask,
   handleValidationErrors,
-  async (req: AuthRequest, res) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const user = req.user!;
       const { title, description, due_date, priority, status, category_id } =
@@ -74,7 +74,7 @@ router.put(
   authenticateToken,
   validateTask,
   handleValidationErrors,
-  async (req: AuthRequest, res) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const user = req.user!;
       const { id } = req.params;
