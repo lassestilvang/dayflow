@@ -68,7 +68,7 @@ export class Task {
   user!: User;
 
   @ManyToOne(() => Category, (category) => category.tasks, { nullable: true })
-  category!: Category;
+  category!: Category | null;
 
   @OneToMany(() => Collaboration, (collaboration) => collaboration.task)
   collaborations!: Collaboration[];

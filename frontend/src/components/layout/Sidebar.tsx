@@ -19,7 +19,7 @@ export function Sidebar() {
   const { data: tasks } = useTasks();
   const { data: categories } = useCategories();
   const { data: collaborations } = useCollaborations();
-  const { currentView, setCurrentView } = useAppStore();
+  const { setCurrentView } = useAppStore();
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(["tasks"])
   );

@@ -1,3 +1,4 @@
+// @ts-ignore
 import { Client } from "@notionhq/client";
 import { ITaskImportService, ExternalTask } from "./ITaskImportService";
 import { TaskImportProvider } from "../../entities/TaskImport";

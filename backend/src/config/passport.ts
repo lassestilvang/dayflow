@@ -1,10 +1,10 @@
-declare module "passport-microsoft";
-declare module "passport-apple";
+// @ts-ignore
+import MicrosoftStrategy from "passport-microsoft";
+// @ts-ignore
+import AppleStrategy from "passport-apple";
 
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import MicrosoftStrategy from "passport-microsoft";
-import AppleStrategy from "passport-apple";
 import { AppDataSource } from "../data-source";
 import { CalendarIntegration } from "../entities/CalendarIntegration";
 
@@ -22,7 +22,7 @@ passport.use(
         process.env.BASE_URL || "http://localhost:3000"
       }/api/calendars/google/callback`,
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (accessToken: string, refreshToken: string, profile: any, done: (error: any, user?: any) => void) => {
       try {
         // This will be handled in the callback route
         done(null, { accessToken, refreshToken, profile, provider: "google" });
@@ -45,7 +45,7 @@ passport.use(
       }/api/calendars/microsoft/callback`,
       scope: ["https://graph.microsoft.com/Calendars.Read"],
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (accessToken: string, refreshToken: string, profile: any, done: (error: any, user?: any) => void) => {
       try {
         done(null, { accessToken, refreshToken, profile, provider: "outlook" });
       } catch (error) {
@@ -68,7 +68,7 @@ passport.use(
         process.env.BASE_URL || "http://localhost:3000"
       }/api/calendars/apple/callback`,
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (accessToken: string, refreshToken: string, profile: any, done: (error: any, user?: any) => void) => {
       try {
         done(null, { accessToken, refreshToken, profile, provider: "apple" });
       } catch (error) {

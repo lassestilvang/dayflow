@@ -57,7 +57,7 @@ router.post(
         priority,
         status,
         user,
-        category,
+        category: category || undefined,
       });
 
       await taskRepository.save(task);
@@ -154,75 +154,85 @@ router.post("/parse-nlp", authenticateToken, async (req: AuthRequest, res) => {
 });
 
 // Create task/event from parsed NLP
-router.post("/create-from-nlp", authenticateToken, async (req: AuthRequest, res) => {
-  try {
-    const user = req.user!;
-    const { input } = req.body;
+router.post(
+  "/create-from-nlp",
+  authenticateToken,
+  async (req: AuthRequest, res) => {
+    try {
+      const user = req.user!;
+      const { input } = req.body;
 
-    if (!input || typeof input !== "string") {
-      return res.status(400).json({ error: "Input text is required" });
+      if (!input || typeof input !== "string") {
+        return res.status(400).json({ error: "Input text is required" });
+      }
+
+      const parsed = NLPService.parseTask(input);
+
+      if (parsed.isEvent) {
+        // Create event
+        const event = eventRepository.create({
+          title: parsed.title,
+          description: parsed.description,
+          start_time: parsed.start_time!,
+          end_time: parsed.end_time!,
+          location: parsed.location,
+          rrule: parsed.rrule,
+          user,
+        });
+
+        await eventRepository.save(event);
+        res.status(201).json({ type: "event", data: event });
+      } else {
+        // Create task
+        const task = taskRepository.create({
+          title: parsed.title,
+          description: parsed.description,
+          due_date: parsed.due_date,
+          priority: parsed.priority,
+          rrule: parsed.rrule,
+          user,
+        });
+
+        await taskRepository.save(task);
+        res.status(201).json({ type: "task", data: task });
+      }
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create task/event" });
     }
-
-    const parsed = NLPService.parseTask(input);
-
-    if (parsed.isEvent) {
-      // Create event
-      const event = eventRepository.create({
-        title: parsed.title,
-        description: parsed.description,
-        start_time: parsed.start_time!,
-        end_time: parsed.end_time!,
-        location: parsed.location,
-        rrule: parsed.rrule,
-        user,
-      });
-
-      await eventRepository.save(event);
-      res.status(201).json({ type: "event", data: event });
-    } else {
-      // Create task
-      const task = taskRepository.create({
-        title: parsed.title,
-        description: parsed.description,
-        due_date: parsed.due_date,
-        priority: parsed.priority,
-        rrule: parsed.rrule,
-        user,
-      });
-
-      await taskRepository.save(task);
-      res.status(201).json({ type: "task", data: task });
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Failed to create task/event" });
   }
-});
+);
 
 // Get scheduling suggestions
-router.post("/scheduling-suggestions", authenticateToken, async (req: AuthRequest, res) => {
-  try {
-    const user = req.user!;
-    const { start_time, end_time, duration_minutes } = req.body;
+router.post(
+  "/scheduling-suggestions",
+  authenticateToken,
+  async (req: AuthRequest, res) => {
+    try {
+      const user = req.user!;
+      const { start_time, end_time, duration_minutes } = req.body;
 
-    if (!start_time || !end_time) {
-      return res.status(400).json({ error: "Start time and end time are required" });
+      if (!start_time || !end_time) {
+        return res
+          .status(400)
+          .json({ error: "Start time and end time are required" });
+      }
+
+      const preferredTime: TimeSlot = {
+        start: new Date(start_time),
+        end: new Date(end_time),
+      };
+
+      const suggestions = await SchedulingService.findAvailableSlots(
+        user,
+        preferredTime,
+        duration_minutes || 60
+      );
+
+      res.json(suggestions);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get scheduling suggestions" });
     }
-
-    const preferredTime: TimeSlot = {
-      start: new Date(start_time),
-      end: new Date(end_time),
-    };
-
-    const suggestions = await SchedulingService.findAvailableSlots(
-      user,
-      preferredTime,
-      duration_minutes || 60
-    );
-
-    res.json(suggestions);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to get scheduling suggestions" });
   }
-});
+);
 
 export default router;

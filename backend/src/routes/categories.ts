@@ -1,7 +1,8 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { Category } from "../entities/Category";
-import { authenticateToken, AuthRequest } from "../middleware/auth";
+import { User } from "../entities/User";
+import { authenticateToken } from "../middleware/auth";
 import {
   validateCategory,
   handleValidationErrors,
@@ -11,9 +12,9 @@ const router = Router();
 const categoryRepository = AppDataSource.getRepository(Category);
 
 // Get all categories for user
-router.get("/", authenticateToken, async (req: AuthRequest, res) => {
+router.get("/", authenticateToken, async (req: Request, res: Response) => {
   try {
-    const user = req.user!;
+    const user = req.user as User;
     const categories = await categoryRepository.find({
       where: { user: { id: user.id } },
       order: { created_at: "DESC" },
@@ -30,9 +31,9 @@ router.post(
   authenticateToken,
   validateCategory,
   handleValidationErrors,
-  async (req: AuthRequest, res) => {
+  async (req: Request, res: Response) => {
     try {
-      const user = req.user!;
+      const user = req.user as User;
       const { name, color } = req.body;
 
       const category = categoryRepository.create({
@@ -55,9 +56,9 @@ router.put(
   authenticateToken,
   validateCategory,
   handleValidationErrors,
-  async (req: AuthRequest, res) => {
+  async (req: Request, res: Response) => {
     try {
-      const user = req.user!;
+      const user = req.user as User;
       const { id } = req.params;
       const { name, color } = req.body;
 
@@ -81,24 +82,28 @@ router.put(
 );
 
 // Delete category
-router.delete("/:id", authenticateToken, async (req: AuthRequest, res) => {
-  try {
-    const user = req.user!;
-    const { id } = req.params;
+router.delete(
+  "/:id",
+  authenticateToken,
+  async (req: Request, res: Response) => {
+    try {
+      const user = req.user as User;
+      const { id } = req.params;
 
-    const category = await categoryRepository.findOne({
-      where: { id: parseInt(id), user: { id: user.id } },
-    });
+      const category = await categoryRepository.findOne({
+        where: { id: parseInt(id), user: { id: user.id } },
+      });
 
-    if (!category) {
-      return res.status(404).json({ error: "Category not found" });
+      if (!category) {
+        return res.status(404).json({ error: "Category not found" });
+      }
+
+      await categoryRepository.remove(category);
+      res.json({ message: "Category deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete category" });
     }
-
-    await categoryRepository.remove(category);
-    res.json({ message: "Category deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to delete category" });
   }
-});
+);
 
 export default router;

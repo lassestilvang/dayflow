@@ -5,13 +5,11 @@ import type { Collaboration } from "@/lib/api";
 interface ManageSharedResourcesProps {
   collaborations: Collaboration[];
   resourceType: "task" | "event";
-  resourceId: number;
 }
 
 export function ManageSharedResources({
   collaborations,
   resourceType,
-  resourceId,
 }: ManageSharedResourcesProps) {
   const deleteCollaboration = useDeleteCollaboration();
 

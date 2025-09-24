@@ -14,7 +14,7 @@ export function CalendarGrid({ weekStart }: CalendarGridProps) {
   return (
     <div className="overflow-x-auto h-full scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
       <div className="grid grid-cols-7 gap-1 md:gap-2 min-w-max h-full px-2 md:px-0">
-        {days.map((day, index) => (
+        {days.map((day) => (
           <DayColumn key={day.toISOString()} date={day} />
         ))}
       </div>

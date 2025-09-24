@@ -11,7 +11,7 @@ declare global {
   }
 }
 
-export type AuthRequest = Request;
+export type AuthRequest = Request & { user?: User };
 
 export const authenticateToken = async (
   req: Request,
