@@ -11,6 +11,10 @@ export class AddCollaborationUpdates1732549300000
     await queryRunner.query(`
       CREATE TYPE "collaborations_role_enum" AS ENUM('read', 'write', 'admin')
     `);
+    // Drop default first
+    await queryRunner.query(`
+      ALTER TABLE "collaborations" ALTER COLUMN "role" DROP DEFAULT
+    `);
     await queryRunner.query(`
       ALTER TABLE "collaborations" ALTER COLUMN "role" TYPE "collaborations_role_enum" USING
         CASE
@@ -18,6 +22,10 @@ export class AddCollaborationUpdates1732549300000
           WHEN "role" = 'collaborator' THEN 'write'::"collaborations_role_enum"
           ELSE 'write'::"collaborations_role_enum"
         END
+    `);
+    // Set new default
+    await queryRunner.query(`
+      ALTER TABLE "collaborations" ALTER COLUMN "role" SET DEFAULT 'write'
     `);
     await queryRunner.query(`
       DROP TYPE "collaborations_role_enum_old"
@@ -58,6 +66,10 @@ export class AddCollaborationUpdates1732549300000
     await queryRunner.query(`
       CREATE TYPE "collaborations_role_enum" AS ENUM('owner', 'collaborator')
     `);
+    // Drop default first
+    await queryRunner.query(`
+      ALTER TABLE "collaborations" ALTER COLUMN "role" DROP DEFAULT
+    `);
     await queryRunner.query(`
       ALTER TABLE "collaborations" ALTER COLUMN "role" TYPE "collaborations_role_enum" USING
         CASE
@@ -66,6 +78,10 @@ export class AddCollaborationUpdates1732549300000
           WHEN "role" = 'read' THEN 'collaborator'::"collaborations_role_enum"
           ELSE 'collaborator'::"collaborations_role_enum"
         END
+    `);
+    // Set old default
+    await queryRunner.query(`
+      ALTER TABLE "collaborations" ALTER COLUMN "role" SET DEFAULT 'collaborator'
     `);
     await queryRunner.query(`
       DROP TYPE "collaborations_role_enum_old"

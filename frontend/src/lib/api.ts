@@ -3,6 +3,29 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 const API_BASE_URL = "http://localhost:3000/api"; // Adjust as needed
 
 // Types
+export interface User {
+  id: number;
+  email: string;
+  name: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  name: string;
+}
+
+export interface AuthResponse {
+  message: string;
+  token: string;
+  user: User;
+}
+
 export interface Task {
   id: number;
   title: string;
@@ -34,16 +57,47 @@ export interface Category {
 }
 
 // API functions
+const login = async (credentials: LoginRequest): Promise<AuthResponse> => {
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(credentials),
+  });
+  if (!response.ok) throw new Error("Login failed");
+  const data = await response.json();
+  localStorage.setItem("token", data.token);
+  return data;
+};
+
+const register = async (userData: RegisterRequest): Promise<AuthResponse> => {
+  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userData),
+  });
+  if (!response.ok) throw new Error("Registration failed");
+  const data = await response.json();
+  localStorage.setItem("token", data.token);
+  return data;
+};
+
 const fetchTasks = async (): Promise<Task[]> => {
   const token = localStorage.getItem("token");
+  console.log("Frontend: Fetching tasks, token present:", token ? "yes" : "no");
   if (!token) {
     throw new Error("No authentication token");
   }
+  console.log("Frontend: Sending request with Authorization header");
   const response = await fetch(`${API_BASE_URL}/tasks`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+  console.log("Frontend: Response status:", response.status);
   if (!response.ok) throw new Error("Failed to fetch tasks");
   return response.json();
 };
@@ -214,6 +268,18 @@ export const useDeleteCategory = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
+  });
+};
+
+export const useLogin = () => {
+  return useMutation({
+    mutationFn: login,
+  });
+};
+
+export const useRegister = () => {
+  return useMutation({
+    mutationFn: register,
   });
 };
 
