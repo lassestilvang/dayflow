@@ -7,7 +7,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
-    "typeorm": "typeorm-ts-node-esm",
+    "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "npm run typeorm -- migration:generate --dataSource src/data-source.ts",
     "migration:run": "npm run typeorm -- migration:run --dataSource src/data-source.ts"
   },

@@ -42,12 +42,16 @@ export class NotionTaskImportService implements ITaskImportService {
           // Map Notion properties to our task format
           // This mapping would need to be configurable
           const title =
-            properties.Name?.type === "title"
+            properties.Name?.type === "title" &&
+            Array.isArray(properties.Name.title) &&
+            properties.Name.title.length > 0
               ? properties.Name.title[0]?.plain_text || ""
               : "";
 
           const description =
-            properties.Description?.type === "rich_text"
+            properties.Description?.type === "rich_text" &&
+            Array.isArray(properties.Description.rich_text) &&
+            properties.Description.rich_text.length > 0
               ? properties.Description.rich_text[0]?.plain_text || ""
               : "";
 
@@ -58,17 +62,17 @@ export class NotionTaskImportService implements ITaskImportService {
 
           const priority =
             properties.Priority?.type === "select"
-              ? this.mapPriority(properties.Priority.select?.name)
+              ? this.mapPriority((properties.Priority.select as any)?.name)
               : "medium";
 
           const status =
             properties.Status?.type === "status"
-              ? this.mapStatus(properties.Status.status?.name)
+              ? this.mapStatus((properties.Status.status as any)?.name)
               : "pending";
 
           const category =
             properties.Category?.type === "select"
-              ? properties.Category.select?.name
+              ? (properties.Category.select as any)?.name
               : undefined;
 
           tasks.push({

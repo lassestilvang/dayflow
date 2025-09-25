@@ -35,9 +35,13 @@ export interface Category {
 
 // API functions
 const fetchTasks = async (): Promise<Task[]> => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No authentication token");
+  }
   const response = await fetch(`${API_BASE_URL}/tasks`, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${token}`,
     },
   });
   if (!response.ok) throw new Error("Failed to fetch tasks");
@@ -84,9 +88,13 @@ const deleteTask = async (id: number): Promise<void> => {
 };
 
 const fetchCategories = async (): Promise<Category[]> => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No authentication token");
+  }
   const response = await fetch(`${API_BASE_URL}/categories`, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${token}`,
     },
   });
   if (!response.ok) throw new Error("Failed to fetch categories");
@@ -234,9 +242,13 @@ export interface CalendarIntegration {
 }
 
 const fetchEvents = async (): Promise<Event[]> => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No authentication token");
+  }
   const response = await fetch(`${API_BASE_URL}/events`, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${token}`,
     },
   });
   if (!response.ok) throw new Error("Failed to fetch events");
@@ -515,9 +527,13 @@ export const useImportHistory = () => {
 
 // Collaborations
 const fetchCollaborations = async (): Promise<Collaboration[]> => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No authentication token");
+  }
   const response = await fetch(`${API_BASE_URL}/collaborations`, {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${token}`,
     },
   });
   if (!response.ok) throw new Error("Failed to fetch collaborations");
